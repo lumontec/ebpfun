@@ -5,7 +5,7 @@
 # MIT.txt or GPL.txt for full copies of the license.
 #
 
-always += probe.o
+always += test_bpf.o
 
 LLC ?= llc
 CLANG ?= clang
@@ -21,7 +21,7 @@ clean:
 	$(MAKE) -C $(KERNELDIR) M=$$PWD clean
 	@rm -f *~
 
-$(obj)/probe.o: $(src)/test_bpf.c 
+$(obj)/test_bpf.o: $(src)/test_bpf.c 
 	$(CLANG) $(LINUXINCLUDE) \
 		$(KBUILD_CPPFLAGS) \
 		$(KBUILD_EXTRA_CPPFLAGS) \
@@ -34,6 +34,6 @@ $(obj)/probe.o: $(src)/test_bpf.c
 		-fno-stack-protector \
                 -Wno-unknown-warning-option \
 		-Wno-tautological-compare \
-		-O2 -emit-llvm -c $< -o $(patsubst %.o,%.ll,$@)
-#	$(LLC) -march=bpf -filetype=obj -o $@ $(patsubst %.o,%.ll,$@)
+		-O2 -g -emit-llvm -c $< -o $(patsubst %.o,%.ll,$@)
+	$(LLC) -march=bpf -filetype=obj -o $@ $(patsubst %.o,%.ll,$@)
 #		-fno-jump-tables \
