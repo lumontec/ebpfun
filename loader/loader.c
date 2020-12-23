@@ -9,10 +9,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 
-int main() {
+int main(int argc, char **argv) {
   int bfd;
   unsigned char buf[1024] = {};
   struct bpf_insn *insn;
@@ -25,7 +26,12 @@ int main() {
   int i;
   struct perf_event_attr pattr = {};
 
-  bfd = open("./probe", O_RDONLY);
+  if (argc != 3) {
+    fprintf(stderr, "Usage: %s <probe> <kprobe_id>\n", argv[0]);
+    exit(EXIT_FAILURE);
+  }
+
+  bfd = open(argv[1], O_RDONLY);
   if (bfd < 0) {
     printf("open eBPF program error: %s\n", strerror(errno));
     exit(-1);
@@ -57,7 +63,7 @@ int main() {
   pattr.sample_type = PERF_SAMPLE_RAW;
   pattr.sample_period = 1;
   pattr.wakeup_events = 1;
-  pattr.config = 1254;
+  pattr.config = atoi(argv[2]);
   pattr.size = sizeof(pattr);
   efd = syscall(SYS_perf_event_open, &pattr, -1, 0, -1, 0);
   if (efd < 0) {
