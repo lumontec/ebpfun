@@ -9,6 +9,9 @@ PROBE_OBJ=probe.o
 
 
 all: $(LOADER_NAME) $(PROBE_NAME)
+	@mkdir -p build
+	@cp ./$(LOADER_NAME)/loader build
+	@cp ./$(PROBE_NAME)/probe.o build
 
 # loader
 $(LOADER_NAME): $(LOADER_OBJ)
@@ -20,14 +23,15 @@ $(PROBE_NAME): $(PROBE_OBJ)
 
 # loader-obj
 $(LOADER_OBJ):
-	cd $(LOADER_NAME) && $(MAKE)
+	$(MAKE) -C $(LOADER_NAME) 
 
 # probe-obj
 $(PROBE_OBJ):
-	cd $(PROBE_NAME) && $(MAKE)
+	$(MAKE) -C $(PROBE_NAME) 
 
 
 .PHONY: clean
 clean: 
 	$(MAKE) -C $(PROBE_NAME) $@ 
 	$(MAKE) -C $(LOADER_NAME) $@ 
+	@rm -rf build

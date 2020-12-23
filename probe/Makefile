@@ -3,7 +3,7 @@
 # other examples can be found at /KERNELDIR/samples/..
 
 # build in kernel
-always += test_bpf.o
+always += probe.o
 
 CLANG ?= clang
 LLC ?= llc
@@ -22,7 +22,7 @@ clean:
 	@rm -f *~
 
 # required by the kernel make system to build my object
-$(obj)/test_bpf.o: $(src)/test_bpf.c 
+$(obj)/probe.o: $(src)/probe.c 
 	$(CLANG) $(LINUXINCLUDE) \
 		$(KBUILD_CPPFLAGS) \
 		$(KBUILD_EXTRA_CPPFLAGS) \

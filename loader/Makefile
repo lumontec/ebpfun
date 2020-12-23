@@ -11,6 +11,7 @@ all: loader
 # % placeholder for exactly same name
 # $@ expands to target name (loader.o)
 # $< expands to the FIRST prerequisite (loader.c)
+# Here i just compile, but not link
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
@@ -20,6 +21,7 @@ all: loader
 # $^ expands to ALL prerequisites (loader.o ..)
 # expands targets one by one inside <Rule 1> by compiling
 # each of them, then compiles/links everything altogether to solve the final targets
+# here i should link
 loader: $(OBJ) 
 	$(CC) -o $@ $^ $(CFLAGS)
 
