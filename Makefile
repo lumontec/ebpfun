@@ -12,6 +12,7 @@ all: $(LOADER_NAME) $(PROBE_NAME)
 	@mkdir -p build
 	@cp ./$(LOADER_NAME)/loader build
 	@cp ./$(PROBE_NAME)/probe.o build
+	@sh ./scripts/bpfstrip build/probe.o build/probe 
 
 # loader
 $(LOADER_NAME): $(LOADER_OBJ)

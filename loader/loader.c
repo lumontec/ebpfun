@@ -25,7 +25,7 @@ int main() {
   int i;
   struct perf_event_attr pattr = {};
 
-  bfd = open("./test_bpf", O_RDONLY);
+  bfd = open("./probe", O_RDONLY);
   if (bfd < 0) {
     printf("open eBPF program error: %s\n", strerror(errno));
     exit(-1);

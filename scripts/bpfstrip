@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo stripping ELF header from bpf bytecode
+
+echo input file path: $1
+echo output file path: $2
+
+dd if=$1  of=$2 bs=1 count=104 skip=64
