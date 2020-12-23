@@ -1,39 +1,33 @@
-#
-# Copyright (c) 2013-2018 Draios Inc. dba Sysdig.
-#
-# This file is dual licensed under either the MIT or GPL 2. See
-# MIT.txt or GPL.txt for full copies of the license.
-#
+# Simple explicit makefile (follow clean Redis style)
 
-always += test_bpf.o
+# Naming configuration
+LOADER_NAME=loader
+LOADER_OBJ=loader.o
+PROBE_NAME=probe
+PROBE_OBJ=probe.o
 
-LLC ?= llc
-CLANG ?= clang
 
-KERNELDIR ?= /lib/modules/$(shell uname -r)/build
 
-# DEBUG = -DBPF_DEBUG
+all: $(LOADER_NAME) $(PROBE_NAME)
 
-all:
-	$(MAKE) -C $(KERNELDIR) M=$$PWD
+# loader
+$(LOADER_NAME): $(LOADER_OBJ)
+	$(info BUILT: $(LOADER_NAME))	
 
-clean:
-	$(MAKE) -C $(KERNELDIR) M=$$PWD clean
-	@rm -f *~
+# probe
+$(PROBE_NAME): $(PROBE_OBJ)
+	$(info BUILT: $(PROBE_NAME))	
 
-$(obj)/test_bpf.o: $(src)/test_bpf.c 
-	$(CLANG) $(LINUXINCLUDE) \
-		$(KBUILD_CPPFLAGS) \
-		$(KBUILD_EXTRA_CPPFLAGS) \
-		$(DEBUG) \
-		-D__KERNEL__ \
-		-D__BPF_TRACING__ \
-		-Wno-gnu-variable-sized-type-not-at-end \
-                -Wno-compare-distinct-pointer-types \
-		-Wno-address-of-packed-member \
-		-fno-stack-protector \
-                -Wno-unknown-warning-option \
-		-Wno-tautological-compare \
-		-O2 -g -emit-llvm -c $< -o $(patsubst %.o,%.ll,$@)
-	$(LLC) -march=bpf -filetype=obj -o $@ $(patsubst %.o,%.ll,$@)
-#		-fno-jump-tables \
+# loader-obj
+$(LOADER_OBJ):
+	cd $(LOADER_NAME) && $(MAKE)
+
+# probe-obj
+$(PROBE_OBJ):
+	cd $(PROBE_NAME) && $(MAKE)
+
+
+.PHONY: clean
+clean: 
+	$(MAKE) -C $(PROBE_NAME) $@ 
+	$(MAKE) -C $(LOADER_NAME) $@ 
