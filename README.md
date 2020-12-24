@@ -63,7 +63,7 @@ Going deeper..
 ##### Clang
 Dump human readable bpf object bytecode:
 ```bash
-llvm-objdump -d -S bpf.o
+llvm-objdump -d -S -no-show-raw-insn --wide bpf.o
 
 probe.o:	file format ELF64-BPF
 Disassembly of section .text:
