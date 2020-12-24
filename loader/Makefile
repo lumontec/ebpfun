@@ -13,7 +13,7 @@ all: loader
 # $< expands to the FIRST prerequisite (loader.c)
 # Here i just compile, but not link
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -g -o $@ $< $(CFLAGS)
 
 
 # Rule 2
@@ -23,7 +23,7 @@ all: loader
 # each of them, then compiles/links everything altogether to solve the final targets
 # here i should link
 loader: $(OBJ) 
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -g -o $@ $^ $(CFLAGS)
 
 
 # Declare PHONY as it has no target
