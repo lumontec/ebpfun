@@ -3,7 +3,7 @@
 # other examples can be found at /KERNELDIR/samples/..
 
 # build in kernel
-always += trace_output_kern.o
+always += trc_out_kern.o
 
 CLANG = clang-10
 LLC = llc-10
@@ -21,20 +21,37 @@ clean:
 	$(MAKE) -C $(KERNELDIR) M=$$PWD clean
 	@rm -f *~
 
-# required by the kernel make system to build my object
-$(obj)/%.o: $(src)/%.c
-	$(Q)$(CLANG) $(NOSTDINC_FLAGS) $(LINUXINCLUDE) $(EXTRA_CFLAGS) -I$(obj) \
-		-D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
-		-D__TARGET_ARCH_$(SRCARCH) -Wno-compare-distinct-pointer-types \
+
+$(obj)/trc_out_kern.o: $(src)/trc_out_kern.c \
+		$(src)/bpf_helpers.h 
+	$(CLANG) $(LINUXINCLUDE) \
+		$(KBUILD_CPPFLAGS) \
+		$(KBUILD_EXTRA_CPPFLAGS) \
+		$(DEBUG) \
+		-D__KERNEL__ \
+		-D__BPF_TRACING__ \
 		-Wno-gnu-variable-sized-type-not-at-end \
-		-Wno-address-of-packed-member -Wno-tautological-compare \
-		-Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
-		-I/home/crash/Documents/local/sysdig-repo/flash/workspace/kernel/tools/testing/selftests/bpf/ \
-		-include asm_goto_workaround.h \
-		-O2 -g -emit-llvm -c $< -o -| $(LLC) -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
+		-Wno-address-of-packed-member \
+		-fno-jump-tables \
+		-fno-stack-protector \
+		-Wno-tautological-compare \
+		-O2 -g -emit-llvm -S $< -o $(patsubst %.o,%.ll,$@)
+	$(LLC) -march=bpf -filetype=obj -o $@ $(patsubst %.o,%.ll,$@)
+
+
+#$(obj)/trc_out_kern.o: $(src)/trc_out_kern.c 
+#	$(src)/bpf_helpers.h \
+#	$(CLANG) $(LINUXINCLUDE) \
+#		-D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
+#		-D__TARGET_ARCH_$(SRCARCH) -Wno-compare-distinct-pointer-types \
+#		-Wno-gnu-variable-sized-type-not-at-end \
+#		-Wno-address-of-packed-member -Wno-tautological-compare \
+#		-Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
+#		-O2 -g -emit-llvm -c $< -o -| $(LLC) -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
 #                          		-fno-jump-tables \
 #
-#		-I/home/crash/Documents/local/sysdig-repo/flash/workspace/kernel/samples/bpf/ \
+#		-I/home/crash/Documents/local/sysdig-repo/flash/workspace/kernel/tools/testing/selftests/bpf/ \
+#		-include asm_goto_workaround.h \
 #
 #		-I/home/crash/Documents/local/sysdig-repo/flash/workspace/kernel/tools/testing/selftests/bpf/ \
 #$(obj)/%.o: $(src)/%.c

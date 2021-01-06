@@ -1,3 +1,4 @@
+#include "asm_goto_workaround.h"
 #include <linux/ptrace.h>
 #include <linux/version.h>
 #include <uapi/linux/bpf.h>
