@@ -4,7 +4,7 @@ Some fun loading the simplest ebpf modules possible in a variety of ways
 ### Examples
 ***raw loader:***
 This includes a simple example of raw loading without any helper library
-***trac_event***
+***trac_output***
 Here libbpf library will be used
 
 ### Launch
@@ -15,7 +15,7 @@ make -j8
 Test probe loading with bpftool of a ***btf enabled machine (compiled with CONFIG_DEBUG_INFO_BTF)***:
 This will pin the module under /sys/fs/bpf/prog
 ```bash
-bpftool prog load ./trace_event_kern.o /sys/fs/bpf/prog -d
+bpftool prog load ./trace_output_kern.o /sys/fs/bpf/prog -d
 ```
 To unload the probe simply remove the file:
 ```bash

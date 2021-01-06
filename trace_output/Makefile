@@ -3,7 +3,7 @@
 # other examples can be found at /KERNELDIR/samples/..
 
 # build in kernel
-always += trace_event_kern.o
+always += trace_output_kern.o
 
 CLANG = clang-10
 LLC = llc-10
@@ -29,9 +29,9 @@ $(obj)/%.o: $(src)/%.c
 		-Wno-gnu-variable-sized-type-not-at-end \
 		-Wno-address-of-packed-member -Wno-tautological-compare \
 		-Wno-unknown-warning-option $(CLANG_ARCH_ARGS) \
+		-I/home/crash/Documents/local/sysdig-repo/flash/workspace/kernel/tools/testing/selftests/bpf/ \
 		-include asm_goto_workaround.h \
-		-O2 -g -emit-llvm -c $< -o $(patsubst %.o,%.ll,$@)
-	$(LLC) -march=bpf -filetype=obj -o $@ $(patsubst %.o,%.ll,$@)
+		-O2 -g -emit-llvm -c $< -o -| $(LLC) -march=bpf $(LLC_FLAGS) -filetype=obj -o $@
 #                          		-fno-jump-tables \
 #
 #		-I/home/crash/Documents/local/sysdig-repo/flash/workspace/kernel/samples/bpf/ \
